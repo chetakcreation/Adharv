@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adharv Vasu | Premium Portfolio</title>
+    <title>Adharv Vasu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -84,7 +83,6 @@
         .read-more-btn { background: #6366f1; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; align-self: flex-start; margin-top: 10px; transition: 0.2s; }
         .read-more-btn:hover { background: #4f46e5; }
 
-        /* Full View Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .modal-content { background: #111827; border: 1px solid #6366f1; border-radius: 15px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #9ca3af; cursor: pointer; }
@@ -138,7 +136,6 @@
             </div>
         </section>
 
-        <!-- My Expertise Cards -->
         <section id="works">
             <h2 class="section-title">My <span>Expertise</span></h2>
             <div class="works-grid">
@@ -174,7 +171,6 @@
                 </div>
             </div>
 
-            <!-- Dynamic File Viewer -->
             <div id="dynamicViewer" class="dynamic-viewer">
                 <div class="viewer-header">
                     <h3 id="viewerCategoryTitle">Category Works</h3>
@@ -187,7 +183,6 @@
             </div>
         </section>
 
-        <!-- Full View Modal Popup -->
         <div class="modal-overlay" id="postModal">
             <div class="modal-content">
                 <span class="modal-close" onclick="closeModal()">&times;</span>
@@ -197,7 +192,6 @@
             </div>
         </div>
 
-        <!-- Chat Section -->
         <section id="chat">
             <h2 class="section-title">Direct <span>Chat</span></h2>
             <div class="chatbot-container">
@@ -238,7 +232,6 @@
     </footer>
 
     <script>
-        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://wqjbdrvdjncmsvwpljhc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxamJkcnZkam5jbXN2d3BsamhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NTU5MTcsImV4cCI6MjEwNzAzMTkxN30.TQ45yYqh8dlDQb83jwbb7K7xOlZeHF4nOX0OejmAaG0';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -283,7 +276,7 @@
                     ${s.whatsapp ? `<a href="${s.whatsapp}" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
                     ${s.fb ? `<a href="${s.fb}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>` : ''}
                     ${s.insta ? `<a href="${s.insta}" target="_blank"><i class="fa-brands fa-instagram"></i></a>` : ''}
-                    ${s.x ? `<a href="${s.x}" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>` : ''}
+                    ${s.x ? `<a href="${s.x}" target="_blank"><svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>` : ''}
                     ${s.linkedin ? `<a href="${s.linkedin}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>` : ''}
                 `;
             }
