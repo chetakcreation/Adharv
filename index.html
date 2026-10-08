@@ -6,6 +6,8 @@
     <title>Adharv Vasu | Premium Portfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
@@ -236,37 +238,47 @@
     </footer>
 
     <script>
+        // --- SUPABASE CONFIGURATION ---
+        const SUPABASE_URL = 'https://wqjbdrvdjncmsvwpljhc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxamJkcnZkam5jbXN2d3BsamhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NTU5MTcsImV4cCI6MjEwNzAzMTkxN30.TQ45yYqh8dlDQb83jwbb7K7xOlZeHF4nOX0OejmAaG0';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let portfolioData = {};
         let currentCategory = '';
         let currentViewMode = 'grid';
 
-        function loadPortfolio() {
-            let savedData = localStorage.getItem('ultimatePortfolioData');
-            if(!savedData) return;
-            let data = JSON.parse(savedData);
+        async function loadPortfolioData() {
+            let { data, error } = await supabaseClient.from('portfolio_data').select('*').eq('id', 1).single();
+            if(data && data.data) {
+                portfolioData = data.data;
+                applyPortfolioData();
+            }
+        }
 
-            if(data.logo) {
-                let parts = data.logo.split(' ');
+        function applyPortfolioData() {
+            if(portfolioData.logo) {
+                let parts = portfolioData.logo.split(' ');
                 if(parts.length > 1) {
                     let last = parts.pop();
                     document.getElementById('navLogo').innerHTML = `${parts.join(' ')} <span>${last}</span>`;
                 } else {
-                    document.getElementById('navLogo').innerHTML = data.logo;
+                    document.getElementById('navLogo').innerHTML = portfolioData.logo;
                 }
             }
 
-            if(data.title) document.getElementById('heroTitle').innerText = data.title;
-            if(data.tagline) document.getElementById('heroTagline').innerText = data.tagline;
-            if(data.aboutQuote) document.getElementById('aboutQuote').innerText = data.aboutQuote;
-            if(data.aboutText) document.getElementById('aboutText').innerText = data.aboutText;
+            if(portfolioData.title) document.getElementById('heroTitle').innerText = portfolioData.title;
+            if(portfolioData.tagline) document.getElementById('heroTagline').innerText = portfolioData.tagline;
+            if(portfolioData.aboutQuote) document.getElementById('aboutQuote').innerText = portfolioData.aboutQuote;
+            if(portfolioData.aboutText) document.getElementById('aboutText').innerText = portfolioData.aboutText;
 
-            if(data.email) {
+            if(portfolioData.email) {
                 let emailEl = document.getElementById('contactEmail');
-                emailEl.innerText = data.email;
-                emailEl.href = `mailto:${data.email}`;
+                emailEl.innerText = portfolioData.email;
+                emailEl.href = `mailto:${portfolioData.email}`;
             }
 
-            if(data.social) {
-                let s = data.social;
+            if(portfolioData.social) {
+                let s = portfolioData.social;
                 document.getElementById('socialLinksContainer').innerHTML = `
                     ${s.whatsapp ? `<a href="${s.whatsapp}" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>` : ''}
                     ${s.fb ? `<a href="${s.fb}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>` : ''}
@@ -296,15 +308,11 @@
             renderWorksList();
         }
 
-        // Render works with Excerpt and Read More button
         function renderWorksList() {
-            let savedData = localStorage.getItem('ultimatePortfolioData');
-            if(!savedData) return;
-            let data = JSON.parse(savedData);
             let listEl = document.getElementById('viewerContentList');
             listEl.innerHTML = '';
 
-            let matchedWorks = data.works ? data.works.filter(w => w.category === currentCategory) : [];
+            let matchedWorks = portfolioData.works ? portfolioData.works.filter(w => w.category === currentCategory) : [];
 
             if(matchedWorks.length === 0) {
                 listEl.innerHTML = `<p style="color:#9ca3af; grid-column:1/-1;">No works found under ${currentCategory} yet.</p>`;
@@ -323,7 +331,6 @@
                     }
                 }
 
-                // Show truncated text snippet for preview
                 let shortDesc = w.desc ? (w.desc.length > 120 ? w.desc.substring(0, 120) + '...' : w.desc) : '';
 
                 listEl.innerHTML += `
@@ -338,7 +345,6 @@
             });
         }
 
-        // Open Full View Modal
         function openFullPost(work) {
             document.getElementById('modalTitle').innerText = work.title;
             document.getElementById('modalDesc').innerText = work.desc || '';
@@ -363,17 +369,18 @@
             document.getElementById('postModal').style.display = 'none';
         }
 
-        function sendVisitorMessage() {
+        async function sendVisitorMessage() {
             let name = document.getElementById('visitorName').value;
             let msg = document.getElementById('visitorMessage').value;
             if(!name || !msg) { alert('Please enter your name and message.'); return; }
 
-            let data = JSON.parse(localStorage.getItem('ultimatePortfolioData')) || { chats: {} };
-            if(!data.chats) data.chats = {};
-            if(!data.chats[name]) data.chats[name] = [];
+            if(!portfolioData.chats) portfolioData.chats = {};
+            if(!portfolioData.chats[name]) portfolioData.chats[name] = [];
 
-            data.chats[name].push({ sender: 'visitor', text: msg });
-            localStorage.setItem('ultimatePortfolioData', JSON.stringify(data));
+            portfolioData.chats[name].push({ sender: 'visitor', text: msg });
+
+            // Sync with Supabase
+            await supabaseClient.from('portfolio_data').upsert({ id: 1, data: portfolioData });
 
             let chatBody = document.getElementById('chatBody');
             chatBody.innerHTML += `<div class="message user">${msg}</div>`;
@@ -382,7 +389,7 @@
             document.getElementById('visitorMessage').value = '';
         }
 
-        window.onload = loadPortfolio;
+        window.onload = loadPortfolioData;
     </script>
 </body>
 </html>
